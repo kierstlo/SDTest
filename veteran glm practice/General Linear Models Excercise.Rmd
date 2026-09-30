@@ -1,0 +1,244 @@
+---
+title: "General Linear Models Excercise"
+author: "Sophia Milian"
+date: "2026-06-02"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(survival)
+library(dplyr)
+library(ggplot2)
+library(tibble)
+library(car)
+library(ggplot2)
+library(survminer)
+library(survRM2)
+library(forcats)
+```
+
+```{r}
+veteran <- survival::veteran
+
+```
+
+The survival function allows RMarkdown to track time to event and event indicators for data in the table. In this case, the event is survival or death.
+
+note:status is 0 if patient survives, 1 if they died
+
+prior: prior therapy 0 if no, 10 if yes
+
+```{r}
+
+veteran_clean<- veteran %>%
+  mutate(
+    trt = factor(trt,
+                 levels = c(1,2),
+                 labels = c("Standard", "Test")),
+    prior = factor(prior,
+                   levels = c(0, 10),
+                   labels = c("No", "Yes")),
+    status = factor(status,
+                    levels = c(0,1),
+                    labels = c("Alive", "Dead")),
+    celltype = factor(celltype,
+                      levels = c("squamous", "smallcell", "adeno", "large"),
+                      labels = c("Squamous", "Small Cell", "Adenocarcinoma", "Large Cell")),
+    survival1year = if_else(time >= 365, 0, 1)
+   )
+
+vctb<-as.tibble(veteran_clean)
+vctb
+```
+
+The mutate function turns the trt, prior, and status values into named factors.
+
+I also created a new variable, survival1year, which tracks survival of patients 1 year after treatment.
+
+General Linear Models
+----------------------
+
+```{r}
+model_1<- glm(survival1year ~ trt, family = binomial, data = vctb)
+
+model_2<- glm(survival1year ~ trt + age + karno, family = binomial, data = vctb)
+
+model_3<- glm(survival1year ~ trt + celltype + karno + diagtime + age + prior, family = binomial, data = vctb )
+
+model_4 <- glm(survival1year ~ trt*celltype + karno + age + diagtime + prior, family = binomial, data = vctb)
+
+model_5<- glm(survival1year~ trt + age + karno + diagtime + prior, family = binomial, data = vctb)
+
+summary(model_1)
+summary(model_2)
+summary(model_3)
+summary(model_4)
+summary(model_5)
+
+```
+
+I picked these models in order of increasing complexity.
+
+* Model 1 predicts survival at one year based on only treatment type.
+
+* Model 2 predicts survival at one year based on treatment type, age, and Karnofsky performance score.
+
+* Model 3 predicts survival at one year based on all of the data from all of the variables.
+
+* Model 4 predicts survival at one year based on all of the data from all of the variables given interaction between treatment and cancer cell type.
+  + I decided to include interactions within Model 4, as the treatment type is always going to be dependent on the type of cancerous cells, in order to increase efficacy.
+
+* Model 5 predicts survival at one year based on treatment, Karnofsky performance score, age, time of diagnosis, and prior therapy.
+
+```{r}
+AIC(model_1, model_2, model_3, model_4, model_5)
+
+anova(model_1, test = "Chisq")
+anova(model_2, test = "Chisq")
+anova(model_3, test = "Chisq")
+anova(model_4, test = "Chisq")
+anova(model_5, test = "Chisq")
+```
+Several logistic regression models were fit to predict what caused a patient to survive or die within one year of treatment. 
+
+The treatment only mode showed almost no evidence that chemotherapy treatment changed odds of dying within one year. The Chi-squared test showed no significant evidence, and the AIC was very high indicating a bad model fit for the data.
+
+I think that the best model was Model 3, as it had multiple variables with evidence of significance in the Chi-squared anova model and the strongest AIC score of roughly 71.186. 
+
+* It appears that the Karnofsky scores were an important covariate, as patients with higher Karnofsky scores had lower probability of death within one year of treatment. Cell Type also seemed to be an important covariate because patient survival changed based on the cancer type.
+
+* Diagnosis time also seems to be significant, although not as significant as the other two variables. 
+
+It is important to note that AIC does not mean anything diagnostically on its own and must be used in conjunction with other tests in order to make sense.
+
+
+```{r}
+summary_model3 <- summary(model_3)
+oddsratios<- exp(coef(model_3))
+conf_intervals<- exp(confint.default(model_3))
+
+results1<- data.frame(
+  Variable = names(oddsratios),
+  OddsRatio = oddsratios, 
+  CI_Lower = conf_intervals[ ,1],
+  CI_Upper = conf_intervals[ ,2],
+  P_value = summary_model3$coefficients[,4]
+  
+)
+
+results1
+```
+
+
+It is also important to note that the reference cancer type for cell type is squamous, represented as 1. This means that celltypeadeno is a comparison between the squamous and adeno cell type survival rates.
+
+* This could mean that the reason the upper level of the CI for celltypeadeno is infinity is due to the fact that there is not enough data to reliably determine the effects of the adenocarcinoma cells on patient survival with squamous cells as a reference.
+
+
+Seeing that model 4 had more interaction but performed more poorly than model 3, I created a new model to see whether the interaction between treatment and cell type was significant.
+
+Null: The model interaction between treatment and cell type is not significant.
+Alternative: The model interaction between treatment and cell type is significant.
+
+```{r}
+model_int<- glm(survival1year ~ trt*celltype, family = binomial, data = vctb)
+
+model_reg<- glm(survival1year ~ trt + celltype, family = binomial, data = vctb)
+
+summary(model_int)
+summary(model_reg)
+
+anova(model_reg, model_int, test = "Chisq")
+```
+
+A P-value of 0.288 is insignificant as it is much larger than standard P-value of 0.05. therefore, the model interaction between the cell type and treatment variables is not significant.
+
+
+Based on the above tests, I conclude that model 3 is the best model at depicting the relationship between different cancer cell types and treatments and patient survival past 1 year. Karnofsky scores, cell type, and diagnosis time all seemed to be important covariates within the data. However, the interaction between cell types and treatment types was proven to be insignificant data.
+
+
+Hazard tests
+--------------
+
+Some Proportional Hazards Models
+
+
+A. Survival Rates at 90 days and 1 year
+```{r}
+str(vctb[, c("time", "status", "trt")])
+table(vctb$status, useNA = "ifany")
+table(vctb$trt, useNA = "ifany")
+summary(vctb$time)
+
+vctb$time_num <- as.numeric(as.character(vctb$time))
+vctb$status_num <- as.numeric(as.character(vctb$status))
+
+km_trt <- survfit(Surv(time, status) ~ trt, data = vctb)
+summary(km_trt, times = c(90, 365))
+
+
+```
+Based on the Kaplan Meier test, about 54% of people survive past 90 days with standard treatment, in comparison to 38% of surviving patients receiving chemotherapy treatment. At one year,7% of the standard treatment group are survivors, while 11% of the chemotherapy group survived.
+
+Therefore, standard treatment has a higher short-term chance of survival for cancer patients than chemotherapy, but a slightly lower survival rate at 1 year of treatment. Chemotherapy isn't necessarily the better option when it comes to cancer survival, as it seems to simply have a different survival curve than standard treatment.  It's also important to note that Kaplan Meier tests become inaccurate once the data collection period ends; they cannot predict future trends and therefore the data drops to zero, which is not accurate to real life. There is also no test of significance in Kaplan Meier testing, and more statistical analysis must be done to truly determine the difference in survival rates per treatment.
+
+B. Restricted mean survival time at 90 days and 1 year
+```{r, eval = FALSE} 
+
+vctb <- 
+  veteran_clean%>%
+  transmute(
+    time_int = time
+    status_int = as.integer(status) - 1L,
+    trt_int = as.integer(trt) - 1L)
+#turning status and treatment numerics/labels into integers
+
+table(vctb$status_int, useNA = "ifany")
+table(vctb$trt_int, useNA = "ifany")
+
+rmst_90 <- rmst2(
+  time = vctb$time,
+  status = vctb$status_rmst,
+  arm = vctb$trt_rmst,
+  tau = 90
+)
+
+rmst_365 <- rmst2(
+  time = vctb$time,
+  status = vctb$status_rmst,
+  arm = vctb$trt_rmst,
+  tau = 365
+)
+
+
+rmst_90
+rmst_365
+
+
+```
+I have no Idea what the object 'NOTE' is that isn't found within the data set, and I've looked all over the internet to find different ways to write this code. I also don't know what I could have done to have my arguments return Infinity on both the maximum and minimum. 
+
+
+
+
+C. Kaplan-Meier plot by treatment
+
+```{r}
+
+km_trt <- survfit(
+  Surv(time, status == "Dead") ~ trt, 
+  data = mutate(veteran_clean, trt = fct_recode(trt, Chemotherapy = "Test"))
+)
+ggsurvplot(
+  km_trt,
+  data = vctb,
+  conf.int = TRUE,
+  pval = TRUE,
+  risk.table = TRUE,
+  xlab = "Days",
+  ylab = "Survival Probability"
+)
+```
+
+Within these plots, we can see an illustration of the previous Kaplan Meier test, and the different survival rates between standard treatment and chemotherapy treatment with patients.
