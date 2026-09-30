@@ -1,0 +1,251 @@
+---
+title: "LTOM"
+author: "Sophia Milian"
+date: "2026-09-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(sf)
+library(tigris)
+library(snakecase)
+```
+## Document Overview
+ , include=FALSE}
+
+In this document, we first merged the Woodard Region data set found online with a 2020 census data set containing county latitudinal, longitudinal, and GEOID information. We then used the merged data set to create a map with the "sf" and "tigris" packages in "ggplot2". We created multiple maps, all documented below.
+
+## Coding and Work-through
+
+It's possible to read the document in as an html as seen as below, but it's much easier to manipulate read in as a csv that we downloaded to the computer. For intents and purposes, we're using the local csv to build the map so that we can manipulate more stuff.
+
+```{r}
+woodards <- read_csv(
+  "https://docs.google.com/spreadsheets/d/16P_67njn5zN_YJzYM_khkg9iW17NkromSIz1BfpV09o/export?format=csv&gid=814861869"
+)
+
+#View(woodards)
+
+#Downloaded the file accessed from google sheets as a .csv locally and put it in working directory to be used within the set.
+wan_data <- read.csv("woodards_american_nations_by_county.csv")
+
+
+#we found longitudinal and latitudinal coordinates that correspond to each county so that we can create the map by county using geospatial data.
+county_data <- read.delim(
+  unz(
+    "2020_Gaz_counties_national.zip",
+    "2020_Gaz_counties_national.txt"
+  )
+)
+
+head(wan_data)
+head(county_data)
+
+names(wan_data)
+names(county_data)
+
+head(wan_data[, c("COUNTY.NAME..FULL.", "STATE.NAME")])
+head(county_data[, c("NAME", "USPS")])
+
+```
+Next, we match the full state name in the wan_data set to the US Post Script name of the county data set so that it is the abbreviated version and is easier to merge.
+```{r}
+#Changing nation names to title case and making them an ordered factor.
+wan_data<- wan_data %>% 
+  mutate(
+    WOODARD.NATION.NAME = as.character(WOODARD.NATION.NAME),
+    WOODARD.NATION.NAME = to_title_case(WOODARD.NATION.NAME),
+    WOODARD.NATION.NAME = factor(
+      WOODARD.NATION.NAME,
+      levels = c(
+        "Yankeedom",
+        "New France",
+        "The Midlands",
+        "Tidewater",
+        "Greater Appalachia",
+        "Deep South",
+        "El Norte",
+        "The Far West",
+        "The Left Coast",
+        "Part of the Spanish Caribbean"
+        
+      )
+    )
+  )
+unique(wan_data$WOODARD.NATION.NAME)
+#matching names
+
+wan_data$USPS <- state.abb[
+  match(wan_data$STATE.NAME, state.name)
+]
+table(wan_data$WOODARD.NATION.NAME, useNA = "ifany")
+
+head(wan_data[, c("STATE.NAME", "USPS")])
+```
+
+Merging the data sets
+```{r}
+
+#Fixing typo for Doña Ana County and adding DC as a valid location within the wan_data set. For clarification: "District of Columbia" was available within the data set, but the USPS abbreviation was not.
+
+wan_data$USPS[wan_data$STATE.NAME == "District of Columbia"] <- "DC"
+wan_data$COUNTY.NAME..FULL.[
+  wan_data$COUNTY.NAME..FULL. == "DoÃ±a Ana County"
+] <- "Doña Ana County"
+
+#Now merging the sets
+
+us_coords <- wan_data %>%
+  left_join(
+    county_data,
+    by = c(
+      "COUNTY.NAME..FULL." = "NAME",
+      "USPS" = "USPS"
+    )
+  )
+us_coords <- wan_data %>%
+  left_join(
+    county_data,
+    by = c(
+      "COUNTY.NAME..FULL." = "NAME",
+      "USPS" = "USPS"
+    )
+  )
+
+# Format GEOID correctly for joining to tigris
+us_coords <- us_coords %>%
+  mutate(GEOID = sprintf("%05d", as.numeric(GEOID)))
+
+head(us_coords)
+
+#Checking to make sure that there are no discrepancies between the counties within each set (hence the additions and renaming above) and that the GEOID will match and be available for all data points.
+
+us_coords %>%
+  filter(is.na(GEOID)) %>%
+  select(COUNTY.NAME..FULL., STATE.NAME, USPS)
+
+sum(is.na(us_coords$GEOID))
+
+```
+Creating a Map of the counties within the Continental US
+```{r}
+#saving local copy of the Census shapefiles so that later calls can reuse them without downloading them again. (improves efficiency)
+options(tigris_use_cache = TRUE)
+
+counties_2020 <- counties(year = 2020, class = "sf")
+
+
+#Removing non-continental areas of the map
+
+continental_counties <- counties_2020 %>% filter(!STATEFP %in% c("02","15","60","66","69","72","78"))
+
+continental_counties <- continental_counties %>%
+  mutate(GEOID = as.character(GEOID))
+
+# Attach Woodard data ONCE
+continental_counties <- continental_counties %>%
+  left_join(
+    us_coords,
+    by = "GEOID"
+  )
+#Transforming map to NAD83/Conus Albers, EPSG 5070 for data presentation
+
+continental_counties<- continental_counties%>%
+  st_transform(crs = 5070)
+
+```
+
+```{r}
+
+ggplot(data = continental_counties) +
+  geom_sf(fill = "white", color = "black", size = 0.1) +
+  theme_minimal() +
+  labs(title = "2020 US County Boundaries")
+
+```
+Connecting our us_coords set by GEOID to the counties in the map above.
+
+```{r woodard-map, fig.width=11, fig.height=7}
+
+# Make GEOID formats match
+us_coords <- us_coords %>%
+  mutate(GEOID = sprintf("%05d", as.numeric(GEOID)))
+
+# Create a NEW dataset for the Woodard map
+woodard_counties <- continental_counties %>%
+  mutate(GEOID = as.character(GEOID)) %>%
+  left_join(us_coords, by = "GEOID") %>%
+  st_transform(crs = 5070)
+
+# Create Woodard map
+ggplot(data = continental_counties) +
+  geom_sf(
+    aes(fill = WOODARD.NATION.NAME),
+    color = "black",
+    linewidth = 0.1
+  ) +
+  scale_fill_brewer(
+    type = "qual",
+    palette = "Paired"
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Woodard's American Nations by County",
+    fill = "Nation"
+  )
+```
+Creating a diagnostic map to determine where counties that are missing data lie.
+```{r diagnostic-map, fig.width=10, fig.height=6}
+continental_counties <- continental_counties %>%
+  mutate(
+    data_status = if_else(
+      is.na(WOODARD.NATION.NAME),
+      "Missing",
+      "Matched"
+    ),
+    data_status = factor(
+      data_status,
+      levels = c("Matched", "Missing")
+    )
+  )
+
+ggplot(continental_counties) +
+  geom_sf(
+    aes(fill = data_status),
+    color = "grey",
+    linewidth = 0.1
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Matched" = "cornflowerblue",
+      "Missing" = "darkred"
+    ),
+    breaks = c("Matched", "Missing"),
+    drop = FALSE
+  ) +
+  guides(
+    fill = guide_legend(
+      override.aes = list(
+        fill = c("cornflowerblue", "darkred")
+      )
+    )
+  ) +
+  labs(
+    title = "Counties Missing Woodard Nation Data",
+    fill = "Data Status"
+  ) +
+  theme_void() +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5)
+  )
+
+#FIXME: can't make the red "missing" color box appear for the map without legitimate missing datab
+```
+
