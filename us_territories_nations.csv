@@ -1,10 +1,127 @@
-NAME,TYPE,WOODARD NATION NAME
-Alaska (Interior/Central),State,Far West
-Alaska (Coastal Panhandle),State,Left Coast
-Alaska (Far North),State,First Nation
-Hawaii,State,Greater Polynesia
-Puerto Rico,Territory,Spanish Caribbean
-Guam,Territory,Greater Polynesia
-American Samoa,Territory,Greater Polynesia
-U.S. Virgin Islands,Territory,West Indies
-Northern Mariana Islands,Territory,Greater Polynesia
+
+Adjuntas,Adjuntas County,SPANISH CARIBBEAN,Puerto Rico
+Aguada,Aguada County,SPANISH CARIBBEAN,Puerto Rico
+Aguadilla,Aguadilla County,SPANISH CARIBBEAN,Puerto Rico
+Aguas Buenas,Aguas Buenas County,SPANISH CARIBBEAN,Puerto Rico
+Aibonito,Aibonito County,SPANISH CARIBBEAN,Puerto Rico
+Añasco,Añasco County,SPANISH CARIBBEAN,Puerto Rico
+Arecibo,Arecibo County,SPANISH CARIBBEAN,Puerto Rico
+Arroyo,Arroyo County,SPANISH CARIBBEAN,Puerto Rico
+Barceloneta,Barceloneta County,SPANISH CARIBBEAN,Puerto Rico
+Barranquitas,Barranquitas County,SPANISH CARIBBEAN,Puerto Rico
+Bayamón,Bayamón County,SPANISH CARIBBEAN,Puerto Rico
+Cabo Rojo,Cabo Rojo County,SPANISH CARIBBEAN,Puerto Rico
+Caguas,Caguas County,SPANISH CARIBBEAN,Puerto Rico
+Camuy,Camuy County,SPANISH CARIBBEAN,Puerto Rico
+Canóvanas,Canóvanas County,SPANISH CARIBBEAN,Puerto Rico
+Carolina,Carolina County,SPANISH CARIBBEAN,Puerto Rico
+Cataño,Cataño County,SPANISH CARIBBEAN,Puerto Rico
+Cayey,Cayey County,SPANISH CARIBBEAN,Puerto Rico
+Ceiba,Ceiba County,SPANISH CARIBBEAN,Puerto Rico
+Ciales,Ciales County,SPANISH CARIBBEAN,Puerto Rico
+Cidra,Cidra County,SPANISH CARIBBEAN,Puerto Rico
+Coamo,Coamo County,SPANISH CARIBBEAN,Puerto Rico
+Comerío,Comerío County,SPANISH CARIBBEAN,Puerto Rico
+Corozal,Corozal County,SPANISH CARIBBEAN,Puerto Rico
+Culebra,Culebra County,SPANISH CARIBBEAN,Puerto Rico
+Dorado,Dorado County,SPANISH CARIBBEAN,Puerto Rico
+Fajardo,Fajardo County,SPANISH CARIBBEAN,Puerto Rico
+Florida,Florida County,SPANISH CARIBBEAN,Puerto Rico
+Guánica,Guánica County,SPANISH CARIBBEAN,Puerto Rico
+Guayama,Guayama County,SPANISH CARIBBEAN,Puerto Rico
+Guayanilla,Guayanilla County,SPANISH CARIBBEAN,Puerto Rico
+Guaynabo,Guaynabo County,SPANISH CARIBBEAN,Puerto Rico
+Gurabo,Gurabo County,SPANISH CARIBBEAN,Puerto Rico
+Hatillo,Hatillo County,SPANISH CARIBBEAN,Puerto Rico
+Hormigueros,Hormigueros County,SPANISH CARIBBEAN,Puerto Rico
+Humacao,Humacao County,SPANISH CARIBBEAN,Puerto Rico
+Isabela,Isabela County,SPANISH CARIBBEAN,Puerto Rico
+Jayuya,Jayuya County,SPANISH CARIBBEAN,Puerto Rico
+Juana Díaz,Juana Díaz County,SPANISH CARIBBEAN,Puerto Rico
+Juncos,Juncos County,SPANISH CARIBBEAN,Puerto Rico
+Lajas,Lajas County,SPANISH CARIBBEAN,Puerto Rico
+Lares,Lares County,SPANISH CARIBBEAN,Puerto Rico
+Las Marías,Las Marías County,SPANISH CARIBBEAN,Puerto Rico
+Las Piedras,Las Piedras County,SPANISH CARIBBEAN,Puerto Rico
+Loíza,Loíza County,SPANISH CARIBBEAN,Puerto Rico
+Luquillo,Luquillo County,SPANISH CARIBBEAN,Puerto Rico
+Manatí,Manatí County,SPANISH CARIBBEAN,Puerto Rico
+Maricao,Maricao County,SPANISH CARIBBEAN,Puerto Rico
+Maunabo,Maunabo County,SPANISH CARIBBEAN,Puerto Rico
+Mayagüez,Mayagüez County,SPANISH CARIBBEAN,Puerto Rico
+Moca,Moca County,SPANISH CARIBBEAN,Puerto Rico
+Morovis,Morovis County,SPANISH CARIBBEAN,Puerto Rico
+Naguabo,Naguabo County,SPANISH CARIBBEAN,Puerto Rico
+Naranjito,Naranjito County,SPANISH CARIBBEAN,Puerto Rico
+Orocovis,Orocovis County,SPANISH CARIBBEAN,Puerto Rico
+Patillas,Patillas County,SPANISH CARIBBEAN,Puerto Rico
+Peñuelas,Peñuelas County,SPANISH CARIBBEAN,Puerto Rico
+Ponce,Ponce County,SPANISH CARIBBEAN,Puerto Rico
+Quebradillas,Quebradillas County,SPANISH CARIBBEAN,Puerto Rico
+Rincón,Rincón County,SPANISH CARIBBEAN,Puerto Rico
+Río Grande,Río Grande County,SPANISH CARIBBEAN,Puerto Rico
+Sabana Grande,Sabana Grande County,SPANISH CARIBBEAN,Puerto Rico
+Salinas,Salinas County,SPANISH CARIBBEAN,Puerto Rico
+San Germán,San Germán County,SPANISH CARIBBEAN,Puerto Rico
+San Juan,San Juan County,SPANISH CARIBBEAN,Puerto Rico
+San Lorenzo,San Lorenzo County,SPANISH CARIBBEAN,Puerto Rico
+San Sebastián,San Sebastián County,SPANISH CARIBBEAN,Puerto Rico
+Santa Isabel,Santa Isabel County,SPANISH CARIBBEAN,Puerto Rico
+Toa Alta,Toa Alta County,SPANISH CARIBBEAN,Puerto Rico
+Toa Baja,Toa Baja County,SPANISH CARIBBEAN,Puerto Rico
+Trujillo Alto,Trujillo Alto County,SPANISH CARIBBEAN,Puerto Rico
+Utuado,Utuado County,SPANISH CARIBBEAN,Puerto Rico
+Vega Alta,Vega Alta County,SPANISH CARIBBEAN,Puerto Rico
+Vega Baja,Vega Baja County,SPANISH CARIBBEAN,Puerto Rico
+Vieques,Vieques County,SPANISH CARIBBEAN,Puerto Rico
+Villalba,Villalba County,SPANISH CARIBBEAN,Puerto Rico
+Yabucoa,Yabucoa County,SPANISH CARIBBEAN,Puerto Rico
+Yauco,Yauco County,SPANISH CARIBBEAN,Puerto Rico
+Maui,Maui County,GREATER POLYNESIA,Hawaii
+Hawaii,Hawaii County,GREATER POLYNESIA,Hawaii
+Honolulu,Honolulu County,GREATER POLYNESIA,Hawaii
+Kauai,Kauai County,GREATER POLYNESIA,Hawaii
+Kalawao,Kalawao County,GREATER POLYNESIA,Hawaii
+Guam,Guam County,GREATER POLYNESIA,Guam
+Eastern District,Eastern District,GREATER POLYNESIA,American Samoa
+Manuʻa District,Manuʻa District,GREATER POLYNESIA,American Samoa
+Western District,Western District,GREATER POLYNESIA,American Samoa
+Rose Atoll,Rose Atoll,GREATER POLYNESIA,American Samoa
+Swains Island,Swains Island,GREATER POLYNESIA,American Samoa
+St. Croix,St. Croix County,WEST INDIES,U.S. Virgin Islands
+St. John,St. John County,WEST INDIES,U.S. Virgin Islands
+St. Thomas,St. Thomas County,WEST INDIES,U.S. Virgin Islands
+Northern Islands,Northern Islands Municipality,GREATER POLYNESIA,Northern Mariana Islands
+Rota,Rota Municipality,GREATER POLYNESIA,Northern Mariana Islands
+Saipan,Saipan Municipality,GREATER POLYNESIA,Northern Mariana Islands
+Tinian,Tinian Municipality,GREATER POLYNESIA,Northern Mariana Islands
+Aleutians East,Aleutians East County,FAR WEST,Alaska
+Aleutians West,Aleutians West County,FAR WEST,Alaska
+Anchorage,Anchorage County,FAR WEST,Alaska
+Bethel,Bethel County,FIRST NATION,Alaska
+Bristol Bay,Bristol Bay County,FAR WEST,Alaska
+Chugach,Chugach County,FAR WEST,Alaska
+Copper River,Copper River County,FAR WEST,Alaska
+Denali,Denali County,FAR WEST,Alaska
+Dillingham,Dillingham County,FAR WEST,Alaska
+Fairbanks North Star,Fairbanks North Star County,FAR WEST,Alaska
+Haines,Haines County,LEFT COAST,Alaska
+Hoonah-Angoon,Hoonah-Angoon County,LEFT COAST,Alaska
+Juneau,Juneau County,LEFT COAST,Alaska
+Kenai Peninsula,Kenai Peninsula County,FAR WEST,Alaska
+Ketchikan Gateway,Ketchikan Gateway County,LEFT COAST,Alaska
+Kodiak Island,Kodiak Island County,FAR WEST,Alaska
+Kusilvak,Kusilvak County,FIRST NATION,Alaska
+Lake and Peninsula,Lake and Peninsula County,FAR WEST,Alaska
+Matanuska-Susitna,Matanuska-Susitna County,FAR WEST,Alaska
+Nome,Nome County,FIRST NATION,Alaska
+North Slope,North Slope County,FIRST NATION,Alaska
+Northwest Arctic,Northwest Arctic County,FIRST NATION,Alaska
+Petersburg,Petersburg County,LEFT COAST,Alaska
+Prince of Wales-Hyder,Prince of Wales-Hyder County,LEFT COAST,Alaska
+Sitka,Sitka County,LEFT COAST,Alaska
+Skagway,Skagway County,LEFT COAST,Alaska
+Southeast Fairbanks,Southeast Fairbanks County,FAR WEST,Alaska
+Wrangell,Wrangell County,LEFT COAST,Alaska
+Yukon-Koyukuk,Yukon-Koyukuk County,FAR WEST,Alaska
+
