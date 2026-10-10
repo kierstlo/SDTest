@@ -10,6 +10,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+wanC_data <- read.csv("woodards_american_nations_by_county.csv")
+wanT_data <- read.csv("us_territories_nations.csv")
 
+wan_data <- rbind(wanC_data, wanT_data)
 ```
 
