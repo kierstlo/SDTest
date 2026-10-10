@@ -16,3 +16,99 @@ wanT_data <- read.csv("us_territories_nations.csv")
 wan_data <- rbind(wanC_data, wanT_data)
 ```
 
+Merging to census geoids
+```{r}
+county_data <- read.delim(
+  unz(
+    "2020_Gaz_counties_national.zip",
+    "2020_Gaz_counties_national.txt"
+  )
+)
+
+head(wan_data)
+head(county_data)
+
+names(wan_data)
+names(county_data)
+
+head(wan_data[, c("COUNTY.NAME..FULL.", "STATE.NAME")])
+head(county_data[, c("NAME", "USPS")])
+
+#Changing nation names to title case and making them an ordered factor.
+wan_data<- wan_data %>% 
+  mutate(
+    WOODARD.NATION.NAME = as.character(WOODARD.NATION.NAME),
+    WOODARD.NATION.NAME = to_title_case(WOODARD.NATION.NAME),
+    WOODARD.NATION.NAME = factor(
+      WOODARD.NATION.NAME,
+      levels = c(
+        "Yankeedom",
+        "New France",
+        "The Midlands",
+        "Tidewater",
+        "Greater Appalachia",
+        "Deep South",
+        "El Norte",
+        "The Far West",
+        "The Left Coast",
+        "Part of the Spanish Caribbean"
+        
+      )
+    )
+  )
+unique(wan_data$WOODARD.NATION.NAME)
+#matching names
+
+wan_data$USPS <- state.abb[
+  match(wan_data$STATE.NAME, state.name)
+]
+table(wan_data$WOODARD.NATION.NAME, useNA = "ifany")
+
+head(wan_data[, c("STATE.NAME", "USPS")])
+
+wan_data$USPS[wan_data$STATE.NAME == "District of Columbia"] <- "DC"
+wan_data$COUNTY.NAME..FULL.[
+  wan_data$COUNTY.NAME..FULL. == "DoÃ±a Ana County"
+] <- "Doña Ana County"
+
+#Now merging the sets
+
+us_coords <- wan_data %>%
+  left_join(
+    county_data,
+    by = c(
+      "COUNTY.NAME..FULL." = "NAME",
+      "USPS" = "USPS"
+    )
+  )
+us_coords <- wan_data %>%
+  left_join(
+    county_data,
+    by = c(
+      "COUNTY.NAME..FULL." = "NAME",
+      "USPS" = "USPS"
+    )
+  )
+
+# Format GEOID correctly for joining to tigris
+us_coords <- us_coords %>%
+  mutate(GEOID = sprintf("%05d", as.numeric(GEOID)))
+
+head(us_coords)
+
+#Checking to make sure that there are no discrepancies between the counties within each set (hence the additions and renaming above) and that the GEOID will match and be available for all data points.
+
+us_coords %>%
+  filter(is.na(GEOID)) %>%
+  select(COUNTY.NAME..FULL., STATE.NAME, USPS)
+
+sum(is.na(us_coords$GEOID))
+```
+Saving data as csv
+```{r}
+install.packages("writexl")
+library(writexl)
+
+write_xlsx(us_coords, "woodardZIPmerge.xlsx")
+```
+
