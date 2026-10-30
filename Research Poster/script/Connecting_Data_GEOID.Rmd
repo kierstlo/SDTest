@@ -21,6 +21,7 @@ reading in the CSV files
 ```{r}
 unos <- readRDS("../data-raw/unos-ltx-art.rds")
 
+
 us_zips<- read_csv(
   "../data/us-zips.csv",
   col_types = cols(
@@ -296,17 +297,25 @@ ggplot(UNOSxWood.clean,
 
 Kaplan Meier Analysis 
 
+Definition of Status & Time
+```{r}
+
+UNOSxWood.clean$status <- ifelse(UNOSxWood.clean$COMPOSITE_DEATH_DPTX > UNOSxWood.clean$PX_STAT_DPTX | is.na(UNOSxWood.clean$COMPOSITE_DEATH_DPTX), 0,1)
+ 
+
+UNOSxWood.clean$surv_time <- pmin(UNOSxWood.clean$PX_STAT_DPTX, UNOSxWood.clean$COMPOSITE_DEATH_DPTX, na.rm = TRUE)
+
+```
+
+
 
 Woodard Nations KM & Log-Rank Analysis for 1, 6 & 10 years
 
 ```{r, fig.width = 10, fig.height = 8}
 
-UNOSxWood.clean$status <- ifelse(UNOSxWood.clean$PX_STAT_DPTX > UNOSxWood.clean$COMPOSITE_DEATH_DPTX,1,0)
-
-
 Woodardkm <- survfit(
   Surv(
-    time = COMPOSITE_DEATH_DPTX,
+    time = surv_time,
     event = status
 ) ~ WOODARD.NATION.NAME, data = UNOSxWood.clean
 )
@@ -317,7 +326,7 @@ summary(Woodardkm, times=365.2422*c(1,6,10))
 
 Woodard_logrank <- survdiff(
   Surv(
-    time = COMPOSITE_DEATH_DPTX,
+    time = surv_time,
     event = status
 ) ~ WOODARD.NATION.NAME, data = UNOSxWood.clean
 )
@@ -346,7 +355,7 @@ UNOS/Census Division KM Analysis & Log-rank Test for 1,6 & 10 years
 ```{r, fig.width = 10, fig.height = 8}
 Censuskm <- survfit(
   Surv(
-  time = COMPOSITE_DEATH_DPTX,
+  time = surv_time,
   event = status
 ) ~ Census_Division, data = UNOSxWood.clean
 )
@@ -355,7 +364,7 @@ summary(Censuskm, times = 365.2422*c(1,6,10))
 
 Census_logrank <- survdiff(
   Surv(
-    time = COMPOSITE_DEATH_DPTX, 
+    time = surv_time, 
     event = status
 ) ~ Census_Division, data = UNOSxWood.clean
 )
@@ -386,7 +395,7 @@ UNOS Regionalization KM Analysis & log-rank test for 1,6 & 10 years
 ```{r, fig.width = 10, fig.height = 8}
 Unosregion_km <- survfit(
   Surv(
-    time = COMPOSITE_DEATH_DPTX,
+    time = surv_time,
     event = status
   ) ~ REGION, data = UNOSxWood.clean
 )
@@ -395,7 +404,7 @@ summary(Unosregion_km,times = 365.2422*c(1,6,10))
 
 Unosregion_logrank <- survdiff(
   Surv(
-    time = COMPOSITE_DEATH_DPTX,
+    time = surv_time,
     event = status
   ) ~ REGION, data = UNOSxWood.clean
 )
