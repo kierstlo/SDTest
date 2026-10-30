@@ -19,6 +19,7 @@ reading in the CSV files
 *unos data set must be added to users own data-raw folder 
 ```{r}
 unos <- readRDS("../data-raw/unos-ltx-art.rds")
+
 us_zips<- read_csv(
   "../data/us-zips.csv",
   col_types = cols(
@@ -375,7 +376,7 @@ Census_plot <- fortify(Censuskm) |>
     aesthetics = c("color", "fill"), name = ""
   ) +
   theme(legend.position = "bottom") +
-  labs(x = "Years since transplant", y = "Surviving percent (patients)") +
+  labs(x = "Years since transplant", y = "Surviving percent (patients)") 
 print(Census_plot)
 
 ggsave("Census-surv-km.pdf", width = unit(10, "in"), height = unit(8, "in"))
@@ -404,7 +405,7 @@ Unosregion_logrank <- survdiff(
 
 Unosregion_logrank
 
-fortify(Unosregion_km) |> 
+Unosregion_plot <- fortify(Unosregion_km) |> 
   ggplot(aes(x = time / 365.2422, y = surv)) +
   geom_step(aes(color = strata)) +
   ggfortify:::geom_confint(
@@ -418,6 +419,11 @@ fortify(Unosregion_km) |>
     aesthetics = c("color", "fill"), name = ""
   ) +
   theme(legend.position = "bottom") +
+  labs(x = "Years since transplant", y = "Surviving percent (patients)") 
+
+print(Unosregion_plot)
+
+ggsave("Unosregion-surv-km.pdf", width = unit(10, "in"), height = unit(8, "in"))
   labs(x = "Years since transplant", y = "Surviving percent (patients)") 
 
 ```
