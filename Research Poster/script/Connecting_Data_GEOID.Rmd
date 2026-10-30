@@ -19,7 +19,6 @@ reading in the CSV files
 *unos data set must be added to users own data-raw folder 
 ```{r}
 unos <- readRDS("../data-raw/unos-ltx-art.rds")
-unos <- readRDS("../../../unos202309/data/unos-ltx.rds")
 us_zips<- read_csv(
   "../data/us-zips.csv",
   col_types = cols(
@@ -321,7 +320,7 @@ Woodard_logrank <- survdiff(
 
 Woodard_logrank
 
-fortify(Woodardkm) |> 
+Woodard_plot <- fortify(Woodardkm) |> 
   ggplot(aes(x = time / 365.2422, y = surv)) +
   geom_step(aes(color = strata)) +
   ggfortify:::geom_confint(
@@ -336,8 +335,9 @@ fortify(Woodardkm) |>
   ) +
   theme(legend.position = "bottom") +
   labs(x = "Years since transplant", y = "Surviving percent (patients)")
+print(Woodard_plot)
 
-
+ggsave("Woodard-surv-km.pdf", width = unit(10, "in"), height = unit(8, "in"))
 ```
 
 UNOS/Census Division KM Analysis & Log-rank Test for 1,6 & 10 years
@@ -361,7 +361,7 @@ Census_logrank <- survdiff(
 
 Census_logrank
 
-fortify(Censuskm) |> 
+Census_plot <- fortify(Censuskm) |> 
   ggplot(aes(x = time / 365.2422, y = surv)) +
   geom_step(aes(color = strata)) +
   ggfortify:::geom_confint(
@@ -375,6 +375,10 @@ fortify(Censuskm) |>
     aesthetics = c("color", "fill"), name = ""
   ) +
   theme(legend.position = "bottom") +
+  labs(x = "Years since transplant", y = "Surviving percent (patients)") +
+print(Census_plot)
+
+ggsave("Census-surv-km.pdf", width = unit(10, "in"), height = unit(8, "in"))
   labs(x = "Years since transplant", y = "Surviving percent (patients)") 
 
 ```

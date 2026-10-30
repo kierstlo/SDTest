@@ -10,3 +10,6 @@
 Research Poster/data-raw/
 Research Poster/results/
 
+# rendered files
+**/*.html
+**/*.pdf
