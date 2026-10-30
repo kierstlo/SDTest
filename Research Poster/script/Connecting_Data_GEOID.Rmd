@@ -4,6 +4,7 @@ author: "Makenna Butlak"
 output: html_document
 ---
 
+
 Downloading the functions that can read the data
 ```{r}
 library(dplyr)
@@ -299,7 +300,9 @@ Kaplan Meier Analysis
 Woodard Nations KM & Log-Rank Analysis for 1, 6 & 10 years
 
 ```{r, fig.width = 10, fig.height = 8}
-UNOSxWood.clean$status <- 1
+
+UNOSxWood.clean$status <- ifelse(UNOSxWood.clean$PX_STAT_DPTX > UNOSxWood.clean$COMPOSITE_DEATH_DPTX,1,0)
+
 
 Woodardkm <- survfit(
   Surv(
@@ -324,10 +327,7 @@ Woodard_logrank
 Woodard_plot <- fortify(Woodardkm) |> 
   ggplot(aes(x = time / 365.2422, y = surv)) +
   geom_step(aes(color = strata)) +
-  ggfortify:::geom_confint(
-    aes(ymin = lower, ymax = upper, color = strata),
-    fill = "transparent", linetype = "blank"
-  ) +
+  
   scale_x_continuous(breaks = seq(0, 50, 10)) +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_brewer(
@@ -365,10 +365,7 @@ Census_logrank
 Census_plot <- fortify(Censuskm) |> 
   ggplot(aes(x = time / 365.2422, y = surv)) +
   geom_step(aes(color = strata)) +
-  ggfortify:::geom_confint(
-    aes(ymin = lower, ymax = upper, color = strata),
-    fill = "transparent", linetype = "blank"
-  ) +
+
   scale_x_continuous(breaks = seq(0, 50, 10)) +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_brewer(
@@ -408,10 +405,7 @@ Unosregion_logrank
 Unosregion_plot <- fortify(Unosregion_km) |> 
   ggplot(aes(x = time / 365.2422, y = surv)) +
   geom_step(aes(color = strata)) +
-  ggfortify:::geom_confint(
-    aes(ymin = lower, ymax = upper, color = strata),
-    fill = "transparent", linetype = "blank"
-  ) +
+
   scale_x_continuous(breaks = seq(0, 50, 10)) +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_brewer(
@@ -427,3 +421,4 @@ ggsave("Unosregion-surv-km.pdf", width = unit(10, "in"), height = unit(8, "in"))
   labs(x = "Years since transplant", y = "Surviving percent (patients)") 
 
 ```
+
