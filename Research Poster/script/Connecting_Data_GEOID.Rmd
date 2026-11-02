@@ -19,8 +19,9 @@ library(ggfortify)
 reading in the CSV files
 *unos data set must be added to users own data-raw folder 
 ```{r}
-unos <- readRDS("../data-raw/unos-ltx-art.rds")
+#unos <- readRDS("../data-raw/unos-ltx-art.rds")
 
+unos <- readRDS("C:/Users/Klore/Downloads/data-raw/unos-ltx-art.rds")
 
 us_zips<- read_csv(
   "../data/us-zips.csv",
@@ -300,10 +301,13 @@ Kaplan Meier Analysis
 Definition of Status & Time
 ```{r}
 
-UNOSxWood.clean$status <- ifelse(UNOSxWood.clean$COMPOSITE_DEATH_DPTX > UNOSxWood.clean$PX_STAT_DPTX | is.na(UNOSxWood.clean$COMPOSITE_DEATH_DPTX), 0,1)
+UNOSxWood.clean$death <- ifelse((UNOSxWood.clean$COMPOSITE_DEATH_DPTX > UNOSxWood.clean$PX_STAT_DPTX) | is.na(UNOSxWood.clean$COMPOSITE_DEATH_DPTX), 0,1)
  
 
-UNOSxWood.clean$surv_time <- pmin(UNOSxWood.clean$PX_STAT_DPTX, UNOSxWood.clean$COMPOSITE_DEATH_DPTX, na.rm = TRUE)
+UNOSxWood.clean$LAST_DPTX <- ifelse(
+  !is.na(UNOSxWood.clean$death),
+  pmin(UNOSxWood.clean$PX_STAT_DPTX, UNOSxWood.clean$COMPOSITE_DEATH_DPTX, na.rm = TRUE),
+  NA)
 
 ```
 
@@ -315,8 +319,8 @@ Woodard Nations KM & Log-Rank Analysis for 1, 6 & 10 years
 
 Woodardkm <- survfit(
   Surv(
-    time = surv_time,
-    event = status
+    time = LAST_DPTX,
+    event = death
 ) ~ WOODARD.NATION.NAME, data = UNOSxWood.clean
 )
 
@@ -326,8 +330,8 @@ summary(Woodardkm, times=365.2422*c(1,6,10))
 
 Woodard_logrank <- survdiff(
   Surv(
-    time = surv_time,
-    event = status
+    time = LAST_DPTX,
+    event = death
 ) ~ WOODARD.NATION.NAME, data = UNOSxWood.clean
 )
 
@@ -355,8 +359,8 @@ UNOS/Census Division KM Analysis & Log-rank Test for 1,6 & 10 years
 ```{r, fig.width = 10, fig.height = 8}
 Censuskm <- survfit(
   Surv(
-  time = surv_time,
-  event = status
+  time = LAST_DPTX,
+  event = death
 ) ~ Census_Division, data = UNOSxWood.clean
 )
 
@@ -364,8 +368,8 @@ summary(Censuskm, times = 365.2422*c(1,6,10))
 
 Census_logrank <- survdiff(
   Surv(
-    time = surv_time, 
-    event = status
+    time = LAST_DPTX, 
+    event = death
 ) ~ Census_Division, data = UNOSxWood.clean
 )
 
@@ -395,8 +399,8 @@ UNOS Regionalization KM Analysis & log-rank test for 1,6 & 10 years
 ```{r, fig.width = 10, fig.height = 8}
 Unosregion_km <- survfit(
   Surv(
-    time = surv_time,
-    event = status
+    time = LAST_DPTX,
+    event = death
   ) ~ REGION, data = UNOSxWood.clean
 )
 
@@ -404,8 +408,8 @@ summary(Unosregion_km,times = 365.2422*c(1,6,10))
 
 Unosregion_logrank <- survdiff(
   Surv(
-    time = surv_time,
-    event = status
+    time = LAST_DPTX,
+    event = death
   ) ~ REGION, data = UNOSxWood.clean
 )
 
