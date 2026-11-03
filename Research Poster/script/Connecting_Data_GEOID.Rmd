@@ -343,7 +343,7 @@ Woodard_plot <- fortify(Woodardkm) |>
   scale_x_continuous(breaks = seq(0, 50, 10)) +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_brewer(
-    type = "qual", palette = "Paired",
+    type = "qual", palette = "Set3",
     aesthetics = c("color", "fill"), name = ""
   ) +
   theme(legend.position = "bottom") +
@@ -381,7 +381,7 @@ Census_plot <- fortify(Censuskm) |>
   scale_x_continuous(breaks = seq(0, 50, 10)) +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_brewer(
-    type = "qual", palette = "Paired",
+    type = "qual", palette = "Set2",
     aesthetics = c("color", "fill"), name = ""
   ) +
   theme(legend.position = "bottom") +
@@ -421,7 +421,7 @@ Unosregion_plot <- fortify(Unosregion_km) |>
   scale_x_continuous(breaks = seq(0, 50, 10)) +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_brewer(
-    type = "qual", palette = "Paired",
+    type = "qual", palette = "Set1",
     aesthetics = c("color", "fill"), name = ""
   ) +
   theme(legend.position = "bottom") +
