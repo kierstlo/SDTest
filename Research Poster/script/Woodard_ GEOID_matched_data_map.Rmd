@@ -195,7 +195,6 @@ ggplot(data = continental_counties) +
   geom_sf(
     aes(fill = WOODARD.NATION.NAME),
     color = "black",
-    alpha = 0.5,
     linewidth = 0.1
   ) +
   scale_fill_brewer(
