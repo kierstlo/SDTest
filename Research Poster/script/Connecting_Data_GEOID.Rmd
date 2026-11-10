@@ -440,51 +440,50 @@ ggsave("Unosregion-surv-km.pdf", width = unit(10, "in"), height = unit(8, "in"))
 ```
 ## Regression Models Across All Three Regions
 
-### Poisson Regression Model
+### Binary Regression Model
 This will compare UNOS, Census Divisions, and Woodard Data based on survival rates regionally 
 UNOS: reference group
 
 $H_0$: Expected county death counts do not differ across regions within the classification system
 
-$H_a$: At least one region has an expected county death count
+$H_a$: At least one region death count differs
 
 ```{r}
 
-# UNOS regions
-UNOS_model <- glm(
-  COMPOSITE_DEATH_DPTX ~ REGION,
+# UNOS logistic regression
+UNOS_LR <- glm(
+  death ~ factor(REGION),
   data = UNOSxWood.clean,
-  family = poisson
+  family = binomial(link = "logit")
 )
 
-#  Census divisions
-Census_model <- glm(
-  COMPOSITE_DEATH_DPTX ~ Census_Division,
+# Census logistic regression
+Census_LR <- glm(
+  death ~ factor(Census_Division),
   data = UNOSxWood.clean,
-  family = poisson
+  family = binomial(link = "logit")
 )
 
-# Woodard nations
-Woodard_model <- glm(
-  COMPOSITE_DEATH_DPTX ~ WOODARD.NATION.NAME,
+# Woodard logistic regression
+Woodard_LR <- glm(
+  death ~ factor(WOODARD.NATION.NAME),
   data = UNOSxWood.clean,
-  family = poisson
+  family = binomial(link = "logit")
 )
 
-summary(UNOS_model)
-summary(Census_model)
-summary(Woodard_model)
-
+summary(UNOS_LR)
+summary(Census_LR)
+summary(Woodard_LR)
 ```
 ### AIC and BIC for Best Fit
 ```{r}
 # AIC (Aikake Information Criterion) to understand which classification explains difference best
 
-AIC(UNOS_model, Census_model, Woodard_model)
+AIC(UNOS_LR, Census_LR, Woodard_LR)
 
 #Using BIC (Bayesian Information Criterion) to understand which classification explains difference best
 
-BIC(UNOS_model, Census_model, Woodard_model)
+BIC(UNOS_LR, Census_LR, Woodard_LR)
 ```
 
 Based on both the AIC and BIC, the UNOS divisions are best fit to describe the difference in death rate between each region.
