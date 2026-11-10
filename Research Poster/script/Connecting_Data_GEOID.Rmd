@@ -1,7 +1,10 @@
 ---
 title: "Connecting_Data_GEOID"
 author: "Makenna Butlak"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 
@@ -14,9 +17,9 @@ library(survival)
 library(survminer)
 library(ggfortify)
 ```
+## Grunt-Work for Data Sets
 
-
-reading in the CSV files
+Reading in the CSV files
 *unos data set must be added to users own data-raw folder 
 ```{r}
 unos <- readRDS("../data-raw/unos-ltx-art.rds")
@@ -74,7 +77,7 @@ creates a new dataset containing only the observations that are missing a county
 ```{r}
 missing_zips <- merged_data %>%
   filter(is.na(county_fips))
-missing_zips
+
 ```
 
 check whether the original ZIP code reference dataset contains missing county FIPS values and examine the states associated with unmatched observations
@@ -138,7 +141,6 @@ unos_clean <- unos %>%
     !is.na(PERM_ZIP_TRR),
     !PERM_ZIP_TRR %in% c("000NA", "NA", "")
   )
-unos_clean
 ```
 ```{r}
 nrow(unos)
@@ -165,7 +167,6 @@ missing_zips <- merge_data_without_missing %>%
   filter(is.na(county_fips)) %>%
   select(PERM_ZIP_TRR)
 
-missing_zips
 ```
 
 Checking zip codes from the United States Zip Codes website- https://www.unitedstateszipcodes.org/
@@ -227,7 +228,9 @@ UNOSxWood.clean<- UNOSxWoodard %>% select(-latitude, -longitude, -timezone, -met
  
 ```
 
-Unos/Woodard Kruskal-Wallis Test
+## Kruskal-Wallis Test (OMIT)
+
+### UNOS/Woodard Kruskal-Wallis Test
 ```{r}
 Wood.KW <- kruskal.test(COMPOSITE_DEATH_DPTX ~ WOODARD.NATION.NAME, data = UNOSxWood.clean)
 
@@ -244,7 +247,8 @@ ggplot(UNOSxWood.clean,
   )
 
 ```
-UNOS/UNOS Regionalization Kruskal-Wallis Test
+
+### UNOS/UNOS Regionalization Kruskal-Wallis Test
 ```{r}
 Region.KW <- kruskal.test(COMPOSITE_DEATH_DPTX ~ REGION, data = UNOSxWood.clean)
 
@@ -274,7 +278,8 @@ UNOSxWood.clean <- UNOSxWood.clean %>%
 table(UNOSxWood.clean$Census_Division, useNA = "ifany")
 
 ```
-UNOS/Census Division Kruskal-Wallis Test
+
+### UNOS/Census Division Kruskal-Wallis Test
 ```{r}
 Census.KW <- kruskal.test(COMPOSITE_DEATH_DPTX ~ Census_Division, data = UNOSxWood.clean)
 
@@ -295,9 +300,9 @@ ggplot(UNOSxWood.clean,
   )
 ```
 
-Kaplan Meier Analysis 
+## Kaplan Meier Analysis 
 
-Definition of Status & Time
+### Definition of Status & Time
 ```{r}
 
 UNOSxWood.clean$death <- ifelse((UNOSxWood.clean$COMPOSITE_DEATH_DPTX > UNOSxWood.clean$PX_STAT_DPTX) | is.na(UNOSxWood.clean$COMPOSITE_DEATH_DPTX), 0,1)
@@ -312,7 +317,7 @@ UNOSxWood.clean$LAST_DPTX <- ifelse(
 
 
 
-Woodard Nations KM & Log-Rank Analysis for 1, 6 & 10 years
+### Woodard Nations KM & Log-Rank Analysis for 1, 6 & 10 years
 
 ```{r, fig.width = 10, fig.height = 8}
 
@@ -353,7 +358,7 @@ print(Woodard_plot)
 ggsave("Woodard-surv-km.pdf", width = unit(10, "in"), height = unit(8, "in"))
 ```
 
-UNOS/Census Division KM Analysis & Log-rank Test for 1,6 & 10 years
+### UNOS/Census Division KM Analysis & Log-rank Test for 1,6 & 10 years
 
 ```{r, fig.width = 10, fig.height = 8}
 Censuskm <- survfit(
@@ -393,7 +398,7 @@ ggsave("Census-surv-km.pdf", width = unit(10, "in"), height = unit(8, "in"))
 
 ```
 
-UNOS Regionalization KM Analysis & log-rank test for 1,6 & 10 years
+### UNOS Regionalization KM Analysis & log-rank test for 1,6 & 10 years
 
 ```{r, fig.width = 10, fig.height = 8}
 Unosregion_km <- survfit(
@@ -433,4 +438,53 @@ ggsave("Unosregion-surv-km.pdf", width = unit(10, "in"), height = unit(8, "in"))
   labs(x = "Years since transplant", y = "Surviving percent (patients)") 
 
 ```
+## Regression Models Across All Three Regions
 
+### Poisson Regression Model
+This will compare UNOS, Census Divisions, and Woodard Data based on survival rates regionally 
+UNOS: reference group
+
+$H_0$: Expected county death counts do not differ across regions within the classification system
+
+$H_a$: At least one region has an expected county death count
+
+```{r}
+
+# UNOS regions
+UNOS_model <- glm(
+  COMPOSITE_DEATH_DPTX ~ REGION,
+  data = UNOSxWood.clean,
+  family = poisson
+)
+
+#  Census divisions
+Census_model <- glm(
+  COMPOSITE_DEATH_DPTX ~ Census_Division,
+  data = UNOSxWood.clean,
+  family = poisson
+)
+
+# Woodard nations
+Woodard_model <- glm(
+  COMPOSITE_DEATH_DPTX ~ WOODARD.NATION.NAME,
+  data = UNOSxWood.clean,
+  family = poisson
+)
+
+summary(UNOS_model)
+summary(Census_model)
+summary(Woodard_model)
+
+```
+### AIC and BIC for Best Fit
+```{r}
+# AIC (Aikake Information Criterion) to understand which classification explains difference best
+
+AIC(UNOS_model, Census_model, Woodard_model)
+
+#Using BIC (Bayesian Information Criterion) to understand which classification explains difference best
+
+BIC(UNOS_model, Census_model, Woodard_model)
+```
+
+Based on both the AIC and BIC, the UNOS divisions are best fit to describe the difference in death rate between each region.
